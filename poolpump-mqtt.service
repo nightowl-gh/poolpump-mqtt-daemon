@@ -1,0 +1,15 @@
+[Unit]
+Description=Pool Heat Pump MQTT Bridge
+After=network-online.target mosquitto.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=poolpump
+EnvironmentFile=/etc/default/poolpump-mqtt
+ExecStart=/usr/bin/python3 /opt/poolpump/poolpump_mqtt.py -d
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

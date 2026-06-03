@@ -1,0 +1,22 @@
+# APK decompilation (large, not source)
+pool_heater_23_apk/
+apk/
+
+# Captures (binary, may contain WiFi credentials)
+*.pcapng
+*.pcap
+*.bin
+
+# Analysis scripts (contain device-specific data)
+parse_pcap.py
+deep_decode.py
+
+# Python
+__pycache__/
+*.pyc
+
+# Tools
+.ruff_cache/
+
+# IDE
+.vscode/

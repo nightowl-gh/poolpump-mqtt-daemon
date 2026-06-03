@@ -1,0 +1,12 @@
+# /etc/default/poolpump-mqtt
+# Configuration for the Pool Heat Pump MQTT Bridge daemon
+
+# Heat pump WiFi module address
+PUMP_HOST=192.168.1.123
+PUMP_PORT=60000
+
+# MQTT broker
+MQTT_HOST=localhost
+MQTT_PORT=1883
+#MQTT_USER=
+#MQTT_PASS=
