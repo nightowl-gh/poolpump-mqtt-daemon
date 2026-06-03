@@ -195,6 +195,8 @@ See [PROTOCOL.md](PROTOCOL.md) for the full binary protocol specification.
 
 ## WiFi Module Setup
 
+> **Note:** This script is untested. Use at your own risk.
+
 If the pump's WiFi module needs to be (re)configured to join your home network,
 use the setup script:
 
