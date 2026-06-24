@@ -461,7 +461,8 @@ class PoolPumpMQTT:
         log.info("Published HA discovery configs")
 
     def _publish_availability(self, status: str):
-        self.mqtt_client.publish(f"{TOPIC_PREFIX}/status", status, retain=True)
+        if self.mqtt_client:
+            self.mqtt_client.publish(f"{TOPIC_PREFIX}/status", status, retain=True)
 
     def _publish_state(self):
         """Publish current state to MQTT or print to console."""
@@ -767,8 +768,8 @@ class PoolPumpMQTT:
 
     def _debug_realtime(self, pkt: bytes):
         fault_msg = ""
-        if pkt[20] and len(pkt) > 24:
-            fault_msg = bytes(pkt[21:25]).decode('ascii', errors='replace').strip('\x00')
+        if len(pkt) > 24:
+            fault_msg = bytes(pkt[21:25]).decode('ascii', errors='replace').strip('\x00').strip()
         desc = FAULT_DESCRIPTIONS.get(fault_msg, "")
         fault_str = f" fault={fault_msg}({desc})" if fault_msg else ""
         fault_time = ""
@@ -876,10 +877,18 @@ class PoolPumpMQTT:
         s.inlet_temp = decode_temp(pkt[12])
         s.outlet_temp = decode_temp(pkt[13])
         s.ambient_temp = decode_temp(pkt[14])
-        s.fault_code = pkt[20] if len(pkt) > 20 else 0
-        if s.fault_code and len(pkt) > 24:
-            s.fault_msg = bytes(pkt[21:25]).decode('ascii', errors='replace').strip('\x00')
+
+        # Fault: bytes 21-24 contain the error code (e.g. " E03" or "E03\x00")
+        if len(pkt) > 24:
+            fault_raw = bytes(pkt[21:25]).decode('ascii', errors='replace').strip('\x00').strip()
+            if fault_raw:
+                s.fault_code = 1
+                s.fault_msg = fault_raw
+            else:
+                s.fault_code = 0
+                s.fault_msg = ""
         else:
+            s.fault_code = 0
             s.fault_msg = ""
 
         # Publish on every realtime update (~8 sec cycle)
