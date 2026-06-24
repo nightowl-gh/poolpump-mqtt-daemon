@@ -319,8 +319,8 @@ Pushed from device to app with current operating status.
 | 16 | (gap) | Unused |
 | 17 | Output Status | Bitfield — relay/output states |
 | 18-19 | (gap) | Unused |
-| 20 | Fault Code Order | Hex value (0 = no fault) |
-| 21-24 | Fault Code Data (4 bytes) | ASCII chars (e.g. "E01\0") |
+| 20 | (reserved) | Always 0x00 — NOT a fault indicator |
+| 21-24 | Fault Code (4 bytes) | ASCII chars (e.g. " E03") — strip nulls+spaces to detect fault |
 | 25 | Fault Year | Value as decimal (year - 2000) |
 | 26 | Fault Month | Value as decimal |
 | 27 | Fault Day | Value as decimal |
@@ -330,8 +330,14 @@ Pushed from device to app with current operating status.
 
 #### Fault Codes
 
-The fault code message is assembled from bytes 21-24 as a 4-character ASCII string
-(trimmed). The following codes are defined (confirmed from APK v2.3 string resources):
+The fault code is detected by reading bytes 21-24 as a 4-character ASCII string,
+stripping null bytes and whitespace. If the result is non-empty, the pump has an
+active fault. Note: byte 20 is always 0x00 regardless of fault state — do NOT use
+it as a fault indicator.
+
+Example from capture: `... 00 20 45 30 33 ...` → byte 20=0x00, bytes 21-24=" E03" → fault "E03".
+
+The following codes are defined (confirmed from APK v2.3 string resources):
 
 | Code | Description |
 |------|-------------|
